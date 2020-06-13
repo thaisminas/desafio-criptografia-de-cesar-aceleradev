@@ -6,8 +6,9 @@ import hashlib
 
 TOKEN = "8edc82295a38d66040fc9160517e805e5438ff4e"
 URL = "https://api.codenation.dev/v1/challenge/dev-ps/generate-data?token={}".format(TOKEN)
+URL_POST = "https://api.codenation.dev/v1/challenge/dev-ps/submit-solution?token={}".format(TOKEN)
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
-ROT = 3
+ROT = 7
 
 
 def manage_file(content):
@@ -28,11 +29,19 @@ def cipher(message):
 
 
 def create_hash(content):
-    return hashlib.sha1(content)
+    return hashlib.sha1(str(content).encode('utf-8')).hexdigest()
 
 
 def request():
     return requests.get(URL)
+
+
+def request_post():
+
+    answer = {"answer": open("answer.json", "rb")}
+    r_post = requests.post(URL_POST, files=answer)
+
+    print(r_post.text)
 
 
 def main():
@@ -46,6 +55,8 @@ def main():
     text['resumo_criptografico'] = create_hash(text.get('decifrado'))
 
     manage_file(json.dumps(text))
+
+    request_post()
 
 
 main()
